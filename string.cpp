@@ -1,20 +1,21 @@
-//working with strings
-//string.cpp
-
 #include <iostream>
+#include <string>
 using namespace std;
 
-int main()
-{
-   string str;
-   string substr;
-   cout << "please input two strings: ";
-   cin >> str >> substr;
-   str += str;
-   int index = str.find(substr);
-   if (index != string::npos)
-      cout << "yes" << endl;
-   else
-      cout << "no" << endl;
-   return 0;
+bool isUniq(string x){
+    for (int i=0; i<x.length()-1; i++){
+        if (x[i]==x[i+1]) return false;
+    }
+    return true;}
+
+int main(){
+    string x;
+    cin >> x;
+    while(!isUniq(x)){
+        for (int i=0; i<x.length()-1; i++){
+            if (x[i]==x[i+1]) {x.erase(i,2);
+            i--;}
+        }
+    }
+    cout <<x;
 }
