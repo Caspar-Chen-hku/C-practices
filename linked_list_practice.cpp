@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cstdlib>
+#include <time.h>
+#include <stdlib.h>
 using namespace std;
 
   struct Node{
@@ -20,6 +22,21 @@ using namespace std;
           current=now;
       }
       return head;
+   }
+   
+   Node* construct_rand(int size){
+       Node* head = new Node;
+       head->val = rand()%100 +1;
+       Node* current=head;
+       Node* now;
+       for (int i=0; i<size; i++){
+           now = new Node;
+           now->val = rand()%100 + 1;
+           now->next=NULL;
+           current->next=now;
+           current=now;
+       }
+       return head;
    }
    
    void display(Node* head){
@@ -162,14 +179,32 @@ using namespace std;
        return result;
        
    }
- 
+   
+   Node* findMiddle(Node* head){
+       if (head==NULL||head->next==NULL) return head;
+       Node* current = head;
+       Node* future = head;
+       while (future!=NULL && future->next!=NULL){
+           current=current->next;
+           future=future->next->next;
+       }
+       return current;
+   }
+   
    int main()
    {
+       srand(time(NULL));
     Node* head = construct(6,1);
     display(head);
     
     Node* new_head = reverse(head);
     display(new_head);
+    
+    Node* middle = findMiddle(new_head);
+    cout << middle->val << endl;
+    
+    Node* rand_head = construct_rand(6);
+    
     
     Node* target = find_reverse(new_head, 2);
     

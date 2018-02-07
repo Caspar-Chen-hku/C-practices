@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <queue>
+#include <cmath>
+#include <vector>
 using namespace std;
 
 struct Node {
@@ -101,6 +103,13 @@ int get_depth(Node* root){
     return rdepth+1;
 }
 
+bool balanced(Node* root){
+    if (root==NULL) return true;
+    int diff =  abs(get_depth(root->left)-get_depth(root->right));
+    cout << "difference is: " << diff << endl;
+    return (diff<=1&&balanced(root->left)&&balanced(root->right));
+}
+
 void destruct(Node* root){
     if (root==NULL) return;
     
@@ -133,6 +142,44 @@ int node_num(Node* root){
     return node_num(root->left) + node_num(root->right) + 1;
 }
 
+Node* mirror(Node* root){
+    if (root==NULL) return NULL;
+    Node* lchild = mirror(root->left);
+    Node* rchild = mirror(root->right);
+    root->right = lchild;
+    root->left = rchild;
+    return root;
+}
+
+int min(Node* root){
+    Node* now=root;
+    while(now->left!=NULL){
+        now=now->left;
+    }
+    return now->val;
+}
+
+int max(Node* root){
+    Node* now = root;
+    while (now->right!=NULL){
+        now=now->right;
+    }
+    return now->val;
+}
+
+Node* findMiddle(Node* root,int target){
+    if (root==NULL) return NULL;
+    if (target==root->val) return root;
+    else if (target > root->val){
+        if (root->right!=NULL) return findMiddle(root->right,target);
+        return root;
+    }
+    else{
+        if (root->left!=NULL) return findMiddle(root->left,target);
+        return root;
+    }
+}
+
 int main() {
     
     srand (time(NULL));
@@ -141,6 +188,8 @@ int main() {
     root->left=NULL;
     root->right=NULL;
     construct_bisearch(root,10);
+    
+    
     
     preorder_traversal(root);
     cout << endl;
@@ -160,7 +209,16 @@ int main() {
    cout << node_num(root) << endl;
    
    BFS(root);
+   
+   if (balanced(root)) cout<< "balanced!" << endl;
     
+    root = mirror(root);
+    inorder_traversal(root);
+    cout << endl;
+    
+    int target = (max(root)+min(root))/2;
+    Node* found = findMiddle(root,target);
+    cout << found->val << endl;
     destruct(root);
     common = NULL;
     return 0;
