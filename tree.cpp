@@ -1,4 +1,4 @@
-#include <iostream>
+##include <iostream>
 #include <cstdlib>
 #include <stdlib.h>
 #include <time.h>
@@ -52,6 +52,17 @@ void construct_bisearch(Node* root, int n){
    for (int i=0; i<n; i++){
        node = new Node;
        node->val = (int) rand()%100 + 1;
+       node->left=NULL;
+       node->right=NULL;
+       root = insert_node(root, node);
+       }
+}
+
+void construct_bisearch_static(Node* root, int a[], int size){
+    Node* node;
+   for (int i=0; i<size; i++){
+       node = new Node;
+       node->val = a[i];
        node->left=NULL;
        node->right=NULL;
        root = insert_node(root, node);
@@ -167,6 +178,16 @@ int max(Node* root){
     return now->val;
 }
 
+
+Node* max_node(Node* head){
+    if (head==NULL) return NULL;
+    Node* now = head;
+    while (now->right!=NULL){
+        now=now->right;
+    }
+    return now;
+}
+
 Node* findMiddle(Node* root,int target){
     if (root==NULL) return NULL;
     if (target==root->val) return root;
@@ -180,6 +201,58 @@ Node* findMiddle(Node* root,int target){
     }
 }
 
+Node* to_double_list(Node* root){
+    if (root==NULL) return NULL;
+    Node* headl = to_double_list(root->left);
+    Node* headr = to_double_list(root->right);
+    Node* maxl = max_node(headl);
+    
+    if (maxl==NULL&&headr==NULL){
+        return root;
+    }
+    if (maxl==NULL){
+        
+        root->right=headr;
+        headr->left=root;
+        return root;
+    }
+    if (headr==NULL){
+        maxl->right=root;
+        root->left=maxl;
+        return headl;
+    }
+    maxl->right=root;
+    root->left=maxl;
+    root->right=headr;
+    headr->left=root;
+    return headl;
+}
+
+void display_list(Node* head){
+    if (head==NULL) return;
+    Node* current=head;
+    while (current!=NULL){
+        cout << current->val << " ";
+        current=current->right;
+    }
+    cout << endl;
+}
+
+void find_path(Node* root, int sum){
+    if ((sum<0)||(root==NULL&&sum!=0)||(root!=NULL&&sum<root->val)){
+        cout << "this path is invalid" << endl;
+        return;
+    }
+    if (root==NULL&&sum==0){
+        cout << "this path is valid" << endl;
+        return;
+    }
+    int temp = root->val;
+    cout << temp << " ";
+    find_path(root->left,sum-temp);
+    find_path(root->right,sum-temp);
+}
+
 int main() {
     
     srand (time(NULL));
@@ -187,38 +260,59 @@ int main() {
     root->val = 50;
     root->left=NULL;
     root->right=NULL;
-    construct_bisearch(root,10);
+    //construct_bisearch(root,10);
     
+    int a[] = {28,89,20,36,64,99,26,42,57,33,15,110,75};
+    construct_bisearch_static(root,a,13);
     
-    
+
+    cout << "Preorder traversal of tree: ";
     preorder_traversal(root);
     cout << endl;
     
+    cout << "Inorder traversal of tree: ";
     inorder_traversal(root);
     cout << endl;
     
+    
+    cout << "Postorder traversal of tree: ";
     postorder_traversal(root);
     cout << endl;
     
+    
+    cout << "depth of the tree: ";
     cout << get_depth(root) << endl;
     
     Node* common = common_ancestor(root, root->left->left->right, root->left->right);
     
+    cout << "common ancestor of the two specific nodes: ";
     cout << common->val << endl;
+    
+    cout << "number of leaves of the tree: ";
     cout << leaf_num(root) << endl;
+    
+    cout << "number of nodes of the tree: ";
    cout << node_num(root) << endl;
    
+   cout << "BFS: ";
    BFS(root);
    
-   if (balanced(root)) cout<< "balanced!" << endl;
+   if (balanced(root)) cout<< "this tree is balanced!" << endl;
     
     root = mirror(root);
+    
+    cout << "Inorder traversal of the mirror tree: "
     inorder_traversal(root);
     cout << endl;
     
     int target = (max(root)+min(root))/2;
     Node* found = findMiddle(root,target);
-    cout << found->val << endl;
+    cout << "target is " << found->val << endl;
+    
+    Node* head = to_double_list(root);
+    display_list(head);
+    find_path(root, 156);
+    
     destruct(root);
     common = NULL;
     return 0;
